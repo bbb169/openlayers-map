@@ -1,13 +1,15 @@
 /* eslint-disable quote-props */
-import { Map, View } from 'ol'
+import { Feature, Map, View } from 'ol'
 import '../styles/Map.css'
 import XYZ from 'ol/source/XYZ.js'
 import { Tile as TileLayer } from 'ol/layer.js'
+import { Geometry, Point } from 'ol/geom'
+import { treeDot } from '../utils/data-info'
+import VectorSource from 'ol/source/Vector'
+import VectorLayer from 'ol/layer/Vector'
 
 export async function renderOLMap () {
-  const dots = await getDots()
-  console.log(dots)
-
+  const treesLayer = await getDotsLayer()
   const map = new Map({
     layers: [
       new TileLayer({
@@ -36,12 +38,29 @@ export async function renderOLMap () {
     }),
     controls: []
   })
-
+  map.addLayer(treesLayer)
   return map
 }
 
-function getDots () {
-  return fetch('http://152.136.254.142:5000/api/gettrees').then((res) => {
-    return res.json()
+async function getDotsLayer () {
+  return fetch('http://152.136.254.142:5000/api/gettrees').then(async (res) => {
+    const dots = (await res.json()).treeinfo as treeDot[]
+    console.log(dots)
+    const features: Array<Feature<Geometry>> = []
+    dots.forEach(e => {
+      const treesFeature = new Feature()
+      treesFeature.setGeometry(new Point([e.x, e.y], 'XY'))
+      features.push(treesFeature)
+    })
+    return featuresToLayer(features)
   })
+}
+
+function featuresToLayer (features: Array<Feature<Geometry>>) {
+  const source = new VectorSource()
+  features.forEach(e => source.addFeature(e))
+
+  const layer = new VectorLayer()
+  layer.setSource(source)
+  return layer
 }

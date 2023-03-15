@@ -1,4 +1,3 @@
-/* eslint-disable quote-props */
 import { Feature, Map, View } from 'ol'
 import '../styles/Map.css'
 import XYZ from 'ol/source/XYZ.js'
@@ -13,7 +12,6 @@ export async function renderOLMap () {
   const treesLayer = await getDotsLayer()
   const map = getMap()
   map.addLayer(treesLayer)
-
   return map
 }
 

@@ -2,7 +2,7 @@ export interface treeDot {
   areaid: string
   id: number
   imgurl: string[]
-  isused: '正常' | '异常'
+  isused: boolean
   type: string
   x: number
   y: number
@@ -14,6 +14,6 @@ export interface roadLine {
   areaid: number
   cardid: number
   dots: Array<{ x: number, y: number }>
-  isused: '已清洗' | '未清洗'
+  isused: boolean
   time: string
 }

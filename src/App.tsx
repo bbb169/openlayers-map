@@ -1,34 +1,35 @@
 import { Button, Popover } from 'antd'
 import { Overlay } from 'ol'
 import React, { useEffect, useState } from 'react'
+import ReactDOM from 'react-dom'
 import './App.css'
 import { renderOLMap } from './component/map'
 
 function App () {
   const [buttons, setButtons] = useState(<></>)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [layerPopover, setLayerPopover] = useState(
-  <Popover placement="top" title={'any'} content={'any'} trigger="hover" open={true}>
-    <div id="popup"></div>
-  </Popover>)
+  const buttonRef: any = React.useRef(<></>)
 
   useEffect(() => {
     renderOLMap().then((map) => {
-      const popup = getPopup(null)
-      console.log(popup)
-
+      const popover = (
+        <Popover content={<div>这是一个Popover！</div>} title="Title" trigger={'focus'}>
+          <Button style={{
+            opacity: 0,
+            width: 1,
+            height: 1
+          }} ref={buttonRef}></Button>
+        </Popover>
+      )
+      const popup = getPopup()
       map.addOverlay(popup)
+      ReactDOM.render(popover as any, popup.getElement() as any)
       map.on('click', function (evt) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        popup.setPosition(undefined)
         map.forEachFeatureAtPixel(evt.pixel, function (feature) {
-          map.removeOverlay(popup)
-          map.addOverlay(getPopup(evt.coordinate))
-          // setLayerPopover(
-          // <Popover placement="top" title={'any'} content={'any'} open={true}>
-          //   <div id="popup"></div>
-          // </Popover>
-          // )
+          popup.setPosition(evt.coordinate)
+          console.log(buttonRef.current)
 
+          buttonRef.current.focus()
           return feature
         })
       })
@@ -44,14 +45,12 @@ function App () {
         zoom && view.setZoom(zoomOut ? zoom - 1 : zoom + 1)
       }
 
-      function getPopup (position: number[] | null) {
-        const popup = new Overlay({
+      function getPopup () {
+        return new Overlay({
           element: document.getElementById('popup') as HTMLElement,
           positioning: 'bottom-center',
           stopEvent: false
         })
-        position && popup.setPosition(position)
-        return popup
       }
     })
   }, [])
@@ -60,7 +59,7 @@ function App () {
     <div className="App">
       <header className="App-header">
         <div id="map" className="map">
-          {layerPopover}
+          <div id='popup'></div>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-around' }}>
           {buttons}

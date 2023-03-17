@@ -9,8 +9,8 @@ import VectorLayer from 'ol/layer/Vector'
 import { Circle, Fill, Stroke, Style } from 'ol/style.js'
 
 export async function renderOLMap () {
-  const treesLayer = await getDotsLayer()
   const map = getMap()
+  const treesLayer = await getDotsLayer()
   map.addLayer(treesLayer)
   return map
 }
@@ -45,6 +45,9 @@ function featuresToLayer (features: Array<Feature<Geometry>>) {
 }
 
 function getMap () {
+  const mapDom = document.getElementById('map') as HTMLElement
+  if (mapDom.childNodes.length > 0) mapDom.childNodes.forEach(e => e.remove())
+
   return new Map({
     layers: [
       new TileLayer({
@@ -64,7 +67,7 @@ function getMap () {
         }
       })
     ],
-    target: document.getElementById('map') as HTMLElement,
+    target: mapDom,
     view: new View({
       projection: 'EPSG:4326',
       center: [110.32469, 20.06039],

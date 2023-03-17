@@ -26,6 +26,8 @@ function App () {
       map.on('click', function (evt) {
         popup.setPosition(undefined)
         map.forEachFeatureAtPixel(evt.pixel, function (feature) {
+          console.log(feature.getProperties())
+
           popup.setPosition(evt.coordinate)
           console.log(buttonRef.current)
 

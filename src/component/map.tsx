@@ -21,9 +21,13 @@ async function getDotsLayer () {
 
     const features: Array<Feature<Geometry>> = []
     dots.forEach(e => {
-      const treesFeature = new Feature()
-      treesFeature.setGeometry(new Point([e.x, e.y], 'XY'))
+      const treesFeature = new Feature({
+        geometry: new Point([e.x, e.y], 'XY')
+      })
       treesFeature.setStyle(getStylesByStatus(e.isused).point)
+      treesFeature.setProperties({
+        ...e
+      })
       features.push(treesFeature)
     })
     return featuresToLayer(features)
